@@ -122,9 +122,9 @@ namespace DataAccessLayer
         {
             try
             {
-                var resultSet = gremlinCache.GetOrCreate(query, () => gremlinClient.SubmitAsync<dynamic>(query.Value));
-                return resultSet;
-                //return gremlinClient.SubmitAsync<dynamic>(query.Value);
+                //var resultSet = gremlinCache.GetOrCreate(query, () => gremlinClient.SubmitAsync<dynamic>(query.Value));
+                //return resultSet;
+                return gremlinClient.SubmitAsync<dynamic>(query.Value);
             }
             catch (Exception e)
             {
@@ -136,9 +136,9 @@ namespace DataAccessLayer
         {
             try
             {
-                var resultSet = gremlinCache.GetOrCreate(query, () => gremlinClient.SubmitAsync<dynamic>(query));
-                return resultSet;
-                //return gremlinClient.SubmitAsync<dynamic>(query);
+                //var resultSet = gremlinCache.GetOrCreate(query, () => gremlinClient.SubmitAsync<dynamic>(query));
+                //return resultSet;
+                return gremlinClient.SubmitAsync<dynamic>(query);
             }
             catch (Exception e)
             {

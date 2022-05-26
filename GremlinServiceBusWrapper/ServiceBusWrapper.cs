@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using DataAccessLayer;
@@ -31,10 +33,10 @@ namespace GremlinServiceBusWrapper
             processor.ProcessErrorAsync += ErrorHandler;
             await processor.StartProcessingAsync();
 
-            ClearQueue();
+            //ClearQueue();
         }
 
-        public async Task AddToQueue(string filepath)
+        /*public async Task AddToQueue(string filepath)
         {
             using ServiceBusMessageBatch messageBatch = await sender.CreateMessageBatchAsync();
 
@@ -42,6 +44,21 @@ namespace GremlinServiceBusWrapper
 
             messageBatch.TryAddMessage(new ServiceBusMessage(filepath));
             await sender.SendMessagesAsync(messageBatch);
+        }*/
+
+        public async Task AddFileToQueue(string filecontent)
+        {
+            try
+            {
+                using ServiceBusMessageBatch messageBatch = await sender.CreateMessageBatchAsync();
+
+                int i = messageBatch.Count;
+
+                messageBatch.TryAddMessage(new ServiceBusMessage(filecontent));
+                await sender.SendMessagesAsync(messageBatch);
+            }
+            catch(Exception ex)
+            { }
         }
 
         private async Task ClearQueue()
@@ -71,11 +88,16 @@ namespace GremlinServiceBusWrapper
             await args.CompleteMessageAsync(args.Message);
         }
 
-        private static Dictionary<string, string> CreateGreminQueries(string filepath)
+        private static Dictionary<string, string> CreateGreminQueries(string filecontent)
         {
             Dictionary<string, string> gremlinQueries = new Dictionary<string, string>();
 
-            Workbook book = Workbook.Load(filepath);
+            Stream stream = new MemoryStream();            
+            byte[] byteArray = Encoding.UTF8.GetBytes(filecontent);
+            stream.Write(byteArray, 0, byteArray.Length);
+            stream.Position = 0;
+
+            Workbook book = Workbook.Load(stream);
 
             gremlinQueries.Add("Cleanup", "g.V().drop()");
 

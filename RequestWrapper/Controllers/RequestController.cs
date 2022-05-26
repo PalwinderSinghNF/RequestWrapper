@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GremlinServiceBusWrapper;
+using System.IO;
+using System.Text;
 
 namespace RequestWrapper.Controllers
 {
@@ -52,12 +54,23 @@ namespace RequestWrapper.Controllers
         [HttpGet("v1/PopulateGraphByExcelImport")]
         public void PopulateGraphByExcelImport()
         {
-            string excelpath = @"C:\GremlinExcel\DemoData.xls";
+            //string excelpath = @"C:\GremlinExcel\DemoData.xls";
 
-            //string excelpath = @"C:\Users\Palwinder Singh\Desktop\New folder\DemoData - Copy.xls"
+            string excelpath = @"C:\Users\Palwinder Singh\Desktop\New folder\DemoData - Copy.xls";
+
+
+            byte[] byteArray = Encoding.UTF8.GetBytes(excelpath);
+            MemoryStream stream = new MemoryStream(byteArray);
+
+            StreamReader sr = new StreamReader(stream);
+
+            String filecontent = sr.ReadToEnd();
 
             ServiceBusWrapper ServiceBusWrapper = new ServiceBusWrapper();
-            ServiceBusWrapper.AddToQueue(excelpath);
+            ServiceBusWrapper.AddFileToQueue(filecontent);
+
+            //ServiceBusWrapper ServiceBusWrapper = new ServiceBusWrapper();
+            //ServiceBusWrapper.AddToQueue(excelpath);
         }
     }
 }
